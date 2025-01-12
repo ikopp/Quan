@@ -1,15 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arabic Audio Combiner</title>
+    <title>قارئ الفرقان</title>
 </head>
 <body>
-    <h1>Arabic Audio Combiner</h1>
-    <label for="arabicInput">Enter Arabic Text:</label>
-    <input type="text" id="arabicInput" placeholder="اكتب هنا">
-    <button id="combineAudio">Combine Audio</button>
+    <h1>قارئ الفرقان</h1>
+    <label for="arabicInput">Enter:</label>
+    <input type="text" id="arabicInput" placeholder="ادخل الفرقان< هنا">
+    <button id="combineAudio">Generate Audio</button>
     <p id="status"></p>
     <audio id="audioPlayer" controls style="display:none;"></audio> <!-- Audio player -->
 
@@ -20,7 +20,7 @@
             const audioPlayer = document.getElementById('audioPlayer');
 
             if (!arabicInput) {
-                statusElement.textContent = 'Please enter Arabic text!';
+                statusElement.textContent = 'Please enter text!';
                 return;
             }
 
@@ -39,7 +39,7 @@
                     const audioFileUrl = result.output;
 
                     // Update the status and set the audio source for playback
-                    statusElement.textContent = 'Audio combined successfully!';
+                    statusElement.textContent = 'Audio generated successfully!';
                     audioPlayer.src = audioFileUrl; // Set the audio source
                     audioPlayer.style.display = 'block'; // Show the audio player
                     audioPlayer.load(); // Load the audio file
