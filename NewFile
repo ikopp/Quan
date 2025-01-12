@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arabic Audio Combiner</title>
+</head>
+<body>
+    <h1>Arabic Audio Combiner</h1>
+    <label for="arabicInput">Enter Arabic Text:</label>
+    <input type="text" id="arabicInput" placeholder="???? ???">
+    <button id="combineAudio">Combine Audio</button>
+    <p id="status"></p>
+    <audio id="audioPlayer" controls style="display:none;"></audio> <!-- Audio player -->
+
+    <script>
+        document.getElementById('combineAudio').addEventListener('click', async () => {
+            const arabicInput = document.getElementById('arabicInput').value.trim();
+            const statusElement = document.getElementById('status');
+            const audioPlayer = document.getElementById('audioPlayer');
+
+            if (!arabicInput) {
+                statusElement.textContent = 'Please enter Arabic text!';
+                return;
+            }
+
+            statusElement.textContent = 'Processing...';
+
+            try {
+                // Send input to the server
+                const response = await fetch('/combine-audio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ arabicInput })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    const audioFileUrl = result.output;
+
+                    // Update the status and set the audio source for playback
+                    statusElement.textContent = 'Audio combined successfully!';
+                    audioPlayer.src = audioFileUrl; // Set the audio source
+                    audioPlayer.style.display = 'block'; // Show the audio player
+                    audioPlayer.load(); // Load the audio file
+                } else {
+                    statusElement.textContent = `Error: ${result.error}`;
+                }
+            } catch (error) {
+                statusElement.textContent = 'Failed to connect to the server.';
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
