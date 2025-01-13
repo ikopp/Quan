@@ -21,7 +21,7 @@ app.post('/combine-audio', async (req, res) => {
         return res.status(400).json({ error: 'No input provided' });
     }
 
-    const audioLibraryPath = path.resolve('./Audio');
+    const audioLibraryPath = path.resolve('./Audio Zakarya');
     const outputFilePath = path.resolve('./output.mp3');
 
     // Generate list of audio files
