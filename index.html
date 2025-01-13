@@ -436,7 +436,11 @@ img {
 <h1>قارئ الفرقان</h1>
     <label for="arabicInput">Enter:</label>
     <input type="text" id="arabicInput" placeholder="ادخل الفرقان< هنا">
-    <button id="combineAudio">Generate Audio</button>
+	<button onclick="generateAudio('Audio Aziz')">الاستماع بصوت عزيز</button>
+    <button onclick="generateAudio('Audio Zakarya')">الاستماع بصوت زكريا</button>
+	<br><br>
+	<audio id="audioPlayer" controls></audio>
+    <br><br>
     <p id="status"></p>
     <audio id="audioPlayer" controls style="display:none;"></audio> <!-- Audio player -->
     
@@ -784,44 +788,45 @@ img {
 
             return counts;
         }
-        document.getElementById('combineAudio').addEventListener('click', async () => {
-            const arabicInput = document.getElementById('arabicInput').value.trim();
-            const statusElement = document.getElementById('status');
-            const audioPlayer = document.getElementById('audioPlayer');
+        async function generateAudio(library) {
+            const arabicInput = document.getElementById('arabicInput').value;
 
             if (!arabicInput) {
-                statusElement.textContent = 'Please enter text!';
+                alert('Please enter Arabic text.');
                 return;
             }
 
-            statusElement.textContent = 'Processing...';
-
             try {
-                // Send input to the server
-                const response = await fetch('/combine-audio', {
+                const response = await fetch('/synthesize', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ arabicInput })
+                    body: JSON.stringify({ arabicInput, library })
                 });
 
-                const result = await response.json();
-                if (response.ok) {
-                    const audioFileUrl = result.output;
-
-                    // Update the status and set the audio source for playback
-                    statusElement.textContent = 'Audio generated successfully!';
-                    audioPlayer.src = audioFileUrl; // Set the audio source
-                    audioPlayer.style.display = 'block'; // Show the audio player
-                    audioPlayer.load(); // Load the audio file
+                const data = await response.json();
+                if (data.success) {
+                    const audioPlayer = document.getElementById('audioPlayer');
+                    audioPlayer.src = data.output;
+                    audioPlayer.play();
                 } else {
-                    statusElement.textContent = `Error: ${result.error}`;
+                    alert(data.error || 'Error generating audio.');
                 }
             } catch (error) {
-                statusElement.textContent = 'Failed to connect to the server.';
-                console.error(error);
+                console.error('Error:', error);
+                alert('Failed to generate audio.');
             }
-        });
+        }
+		function playAudio() {
+            const audioPlayer = document.getElementById('audioPlayer');
+            audioPlayer.play();
+        }
 
+        function pauseAudio() {
+            const audioPlayer = document.getElementById('audioPlayer');
+            if (!audioPlayer.paused) {
+                audioPlayer.pause();
+            }
+        }
         function printResult() {
             const printContents = document.getElementById('output').innerHTML;
             const originalContents = document.body.innerHTML;
