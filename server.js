@@ -21,8 +21,9 @@ app.post('/synthesize', async (req, res) => {
     const outputFilePath = path.resolve(`./${outputFileName}`);
 
     try {
-        // Split the input into chunks of 1000 characters
-        const chunks = arabicInput.match(/.{1,1000}/g);
+        // Remove spaces from input and split into chunks of 600 characters
+        const sanitizedInput = arabicInput.replace(/\s+/g, '');
+        const chunks = sanitizedInput.match(/.{1,600}/g);
 
         // Prepare intermediate files list
         const intermediateFiles = [];
