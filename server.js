@@ -21,34 +21,73 @@ app.post('/synthesize', async (req, res) => {
     const outputFilePath = path.resolve(`./${outputFileName}`);
 
     try {
-        // Initialize the list of audio files to concatenate
-        const audioFiles = [];
+        // Split the input into chunks of 300 characters
+        const chunks = arabicInput.match(/.{1,300}/g);
 
-        // Add each character's audio file to the list
-        for (const char of arabicInput) {
-            const filePath = path.join(audioLibraryPath, `${char}.mp3`);
-            if (fs.existsSync(filePath)) {
-                audioFiles.push(filePath);
-            } else {
-                console.warn(`Audio file not found for character: ${char}`);
+        // Prepare intermediate files list
+        const intermediateFiles = [];
+
+        // Process each chunk and concatenate audio files for it
+        for (let i = 0; i < chunks.length; i++) {
+            const chunk = chunks[i];
+            const intermediateFileName = `intermediate_${i + 1}.mp3`;
+            const intermediateFilePath = path.resolve(`./${intermediateFileName}`);
+
+            // Collect audio files for the chunk
+            const audioFiles = [];
+            for (const char of chunk) {
+                const filePath = path.join(audioLibraryPath, `${char}.mp3`);
+                if (fs.existsSync(filePath)) {
+                    audioFiles.push(filePath);
+                } else {
+                    console.warn(`Audio file not found for character: ${char}`);
+                }
             }
+
+            // Ensure there are valid files for this chunk
+            if (audioFiles.length === 0) {
+                console.warn(`No valid audio files found for chunk ${i + 1}`);
+                continue;
+            }
+
+            // Concatenate the chunk's audio files
+            await new Promise((resolve, reject) => {
+                audioconcat(audioFiles)
+                    .concat(intermediateFilePath)
+                    .on('start', command => console.log(`Processing chunk ${i + 1}: ${command}`))
+                    .on('error', (error, stdout, stderr) => {
+                        console.error(`Error during chunk ${i + 1} processing:`, error);
+                        reject(error);
+                    })
+                    .on('end', output => {
+                        console.log(`Intermediate file created: ${output}`);
+                        intermediateFiles.push(intermediateFilePath);
+                        resolve();
+                    });
+            });
         }
 
-        // Ensure we have at least one valid audio file
-        if (audioFiles.length === 0) {
+        // Ensure we have intermediate files to concatenate
+        if (intermediateFiles.length === 0) {
             return res.status(404).json({ error: 'No valid audio files found to concatenate.' });
         }
 
-        // Use audioconcat to merge the files
-        audioconcat(audioFiles)
+        // Concatenate all intermediate files into the final output
+        audioconcat(intermediateFiles)
             .concat(outputFilePath)
-            .on('start', command => console.log(`ffmpeg process started: ${command}`))
+            .on('start', command => console.log(`Final concatenation process started: ${command}`))
             .on('error', (error, stdout, stderr) => {
-                console.error('Error during audio concatenation:', error);
-                res.status(500).json({ error: 'Failed to generate audio.' });
+                console.error('Error during final concatenation:', error);
+                res.status(500).json({ error: 'Failed to generate final audio.' });
             })
             .on('end', output => {
-                console.log('Audio created successfully:', output);
+                console.log('Final audio created successfully:', output);
+
+                // Clean up intermediate files
+                for (const file of intermediateFiles) {
+                    fs.unlinkSync(file);
+                }
+
                 res.json({ success: true, output: `/${outputFileName}` });
             });
     } catch (error) {
