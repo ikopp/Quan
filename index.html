@@ -80,13 +80,44 @@
         font-size: 0.9em;
       }
     }
+
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .popup button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1.2em;
+      background-color: #00ff00;
+      color: black;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
+  <div class="popup" id="popup">
+    <h1>Blue Pill or Red Pill?</h1>
+    <button onclick="enterSite()">Red (enter)</button>
+    <button onclick="exitSite()">Blue (exit)</button>
+  </div>
+
   <div class="matrix">
     <canvas id="matrix"></canvas>
   </div>
-  <div class="content">
+  <div class="content" id="mainContent" style="display:none">
     <h1>تحذير هام للجميع!!</h1>
     <p>في الفترة الأخيرة، بدأ يظهر شخص يدعي انه المهدي و مخلص البشرية، يروّج لأفكار غريبة ومريبة عن مواضيع مثل "الفرقان" و"الدابة"، ويربطها بأمور تقنية مثل الذكاء الاصطناعي والرقمنة، في محاولة لخلط دينه بالعلم بشكل مشوّه ومبهم.</p>
     <p>نريد نوضح للناس الآتي:</p>
@@ -131,15 +162,17 @@
         drops[i]++;
       }
     }
-
     setInterval(drawMatrix, 33);
 
-    // Add audio play on window load or scroll
-    window.addEventListener('scroll', function() {
+    function enterSite() {
+      document.getElementById('popup').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
       var audio = new Audio('./soundtrack.mp3');
       audio.play();
-    });
-
+    }
+    function exitSite() {
+      window.location.href = 'https://www.elfurquan.com';
+    }
   </script>
 </body>
 </html>
