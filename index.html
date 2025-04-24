@@ -83,9 +83,6 @@
   </style>
 </head>
 <body>
-  <audio autoplay loop>
-    <source src="./soundtrack.mp3" type="audio/mpeg">
-  </audio>
   <div class="matrix">
     <canvas id="matrix"></canvas>
   </div>
@@ -136,6 +133,13 @@
     }
 
     setInterval(drawMatrix, 33);
+
+    // Add audio play on window load or scroll
+    window.addEventListener('load', function() {
+      var audio = new Audio('./soundtrack.mp3');
+      audio.play();
+    });
+
   </script>
 </body>
 </html>
