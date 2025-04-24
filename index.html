@@ -53,7 +53,7 @@
     .typewriter {
       overflow: hidden;
       border-right: .15em solid #00ff00;
-      white-space: wrap;
+      white-space: nowrap;
       margin: 1em auto;
       letter-spacing: .1em;
       animation: typing 4s steps(40, end), blink-caret .75s step-end infinite;
@@ -97,8 +97,9 @@
       <li>إذا شفتوا هذا النوع من المحتوى، تجاهلوه، وتأكدوا إنكم تاخذون معلوماتكم من مصادر معروفة وموثوقة، مش من ناس جالسين يخلطوا دينهم بالتكنولوجيا بغاية عمل جو "ثوري" أو "مخالف".</li>
     </ul>
     <p>وأخيرًا، نقولها بصراحة: نحن ما لنا أي علاقة بهذا الأخير ولا نؤيد أي شيء يطرحه، ولا نتحمل أي مسؤولية عن أفكاره أو اللي ممكن تسببه من تضليل أو ضرر.</p>
-    <p class="typewriter">خليكم واعيين، وخلّوا دايمًا عندكم حس نقدي لأي معلومة توصل.</p>
+    <p>خليكم واعيين، وخلّوا دايمًا عندكم حس نقدي لأي معلومة توصل.</p>
   </div>
+
   <script>
     const canvas = document.getElementById("matrix");
     const ctx = canvas.getContext("2d");
@@ -132,6 +133,12 @@
     }
 
     setInterval(drawMatrix, 33);
+
+    // Add audio play on click
+    document.body.addEventListener('click', function() {
+      var audio = new Audio('./soundtrack.mp3');
+      audio.play();
+    });
   </script>
 </body>
 </html>
